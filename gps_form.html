@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatyczne pobieranie GPS</title>
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+                    enableHighAccuracy: true, // 🔥 Dokładniejsze dane GPS (lepsze dla mobilnych)
+                    timeout: 10000, // ⏳ Czekaj do 10 sekund na lokalizację
+                    maximumAge: 0
+                });
+            } else {
+                alert("Geolokalizacja nie jest obsługiwana przez Twoją przeglądarkę.");
+            }
+        }
+
+        function successCallback(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            var formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSf9w380ssQoNI9vRWFynDLe7H2NDoEk59vT-yL6KOz9cI6odQ/viewform";
+            var fullUrl = formUrl + "?usp=pp_url&entry.110099827=" + encodeURIComponent(lat + "," + lon);
+
+            // 🔗 Przekierowanie do formularza
+            window.location.href = fullUrl;
+        }
+
+        function errorCallback(error) {
+            let message = "";
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message = "Użytkownik odmówił dostępu do lokalizacji.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = "Informacje o lokalizacji są niedostępne.";
+                    break;
+                case error.TIMEOUT:
+                    message = "Przekroczono czas oczekiwania na lokalizację.";
+                    break;
+                default:
+                    message = "Nieznany błąd.";
+                    break;
+            }
+            alert("Błąd pobierania lokalizacji: " + message);
+        }
+    </script>
+</head>
+<body onload="getLocation()">
+    <h2>Trwa pobieranie lokalizacji...</h2>
+</body>
+</html>
+
