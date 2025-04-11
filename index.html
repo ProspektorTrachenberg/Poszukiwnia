@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -35,12 +36,11 @@
     <button id="confirmBtn" disabled>Potwierdź lokalizację</button>
 
     <script>
-        let lat, lon, marker, map;
+        let lat, lon, marker, map, watchId;
 
         function initMap(latitude, longitude) {
             map = L.map('map').setView([latitude, longitude], 17);
 
-            // Ortofotomapa z Geoportal WMS
             const orthoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: 'Źródło: Esri & partners',
                 maxZoom: 20
@@ -59,43 +59,33 @@
         }
 
         function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(successCallback, errorCallback, {
-            enableHighAccuracy: true,
-            timeout: 60000,
-            maximumAge: 0
-        });
-    } else {
-        alert("Geolokalizacja nie jest obsługiwana przez Twoją przeglądarkę.");
-    }
-}
-    } else {
-        alert("Geolokalizacja nie jest obsługiwana przez Twoją przeglądarkę.");
-    }
-});
+            if (navigator.geolocation) {
+                watchId = navigator.geolocation.watchPosition(successCallback, errorCallback, {
+                    enableHighAccuracy: true,
+                    timeout: 60000,
+                    maximumAge: 0
+                });
             } else {
                 alert("Geolokalizacja nie jest obsługiwana przez Twoją przeglądarkę.");
             }
         }
 
         function successCallback(position) {
-    lat = position.coords.latitude;
-    lon = position.coords.longitude;
-    const accuracy = position.coords.accuracy;
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
 
-    // Jeśli mapa już istnieje, zaktualizuj marker i widok
-    if (map) {
-        map.setView([lat, lon], 17);
-        marker.setLatLng([lat, lon]);
-    } else {
-        initMap(lat, lon);
-    }
+            if (!map) {
+                initMap(lat, lon);
+            } else {
+                map.setView([lat, lon], 17);
+                marker.setLatLng([lat, lon]);
+            }
 
-    // Jeśli dokładność jest wystarczająca, zatrzymaj dalsze śledzenie
-    if (accuracy < 10 && navigator.geolocation.clearWatch) {
-        navigator.geolocation.clearWatch();
-    }
-}
+            if (accuracy < 10 && navigator.geolocation.clearWatch) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+        }
 
         function errorCallback(error) {
             alert("Nie udało się pobrać lokalizacji. Upewnij się, że masz włączony GPS i zezwoliłeś na lokalizację.");
@@ -111,4 +101,3 @@
     </script>
 </body>
 </html>
-
