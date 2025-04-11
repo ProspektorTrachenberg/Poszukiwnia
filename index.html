@@ -38,10 +38,14 @@
         let lat, lon, marker, map;
 
         function initMap(latitude, longitude) {
-            map = L.map('map').setView([latitude, longitude], 16);
+            map = L.map('map').setView([latitude, longitude], 17);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19
+            // Ortofotomapa z Geoportal WMS
+            const orthoLayer = L.tileLayer.wms('https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/StandardResolution', {
+                layers: 'Raster',
+                format: 'image/png',
+                transparent: false,
+                attribution: 'Ortofotomapa © Geoportal.gov.pl'
             }).addTo(map);
 
             marker = L.marker([latitude, longitude], { draggable: true }).addTo(map)
@@ -88,4 +92,5 @@
     </script>
 </body>
 </html>
+
 
