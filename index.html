@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FORMULARZ POSZUKIWAŃ TERENOWYCH</title>
+    <title>Potwierdź lokalizację</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -30,7 +30,7 @@
 </head>
 <body>
     <h2>Twoja lokalizacja</h2>
-    <p>Sprawdź i potwierdź lokalizację</p>
+    <p>Poczekaj chwilę, trwa pobieranie lokalizacji GPS...</p>
     <div id="map"></div>
     <button id="confirmBtn" disabled>Potwierdź lokalizację</button>
 
@@ -59,22 +59,39 @@
         }
 
         function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-                    enableHighAccuracy: true,
-                    timeout: 30000,
-                    maximumAge: 0
-                });
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(successCallback, errorCallback, {
+            enableHighAccuracy: true,
+            timeout: 60000,
+            maximumAge: 0
+        });
+    } else {
+        alert("Geolokalizacja nie jest obsługiwana przez Twoją przeglądarkę.");
+    }
+});
             } else {
                 alert("Geolokalizacja nie jest obsługiwana przez Twoją przeglądarkę.");
             }
         }
 
         function successCallback(position) {
-            lat = position.coords.latitude;
-            lon = position.coords.longitude;
-            initMap(lat, lon);
-        }
+    lat = position.coords.latitude;
+    lon = position.coords.longitude;
+    const accuracy = position.coords.accuracy;
+
+    // Jeśli mapa już istnieje, zaktualizuj marker i widok
+    if (map) {
+        map.setView([lat, lon], 17);
+        marker.setLatLng([lat, lon]);
+    } else {
+        initMap(lat, lon);
+    }
+
+    // Jeśli dokładność jest wystarczająca, zatrzymaj dalsze śledzenie
+    if (accuracy < 10 && navigator.geolocation.clearWatch) {
+        navigator.geolocation.clearWatch();
+    }
+}
 
         function errorCallback(error) {
             alert("Nie udało się pobrać lokalizacji. Upewnij się, że masz włączony GPS i zezwoliłeś na lokalizację.");
@@ -90,4 +107,3 @@
     </script>
 </body>
 </html>
-
