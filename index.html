@@ -41,9 +41,9 @@
             map = L.map('map').setView([latitude, longitude], 17);
 
             // Ortofotomapa z Geoportal WMS
-            const orthoLayer = L.tileLayer('https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Ortofotomapa © Geoportal.gov.pl',
-                maxZoom: 22
+            const orthoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Źródło: Esri & partners',
+                maxZoom: 20
             }).addTo(map);
 
             marker = L.marker([latitude, longitude], { draggable: true }).addTo(map)
@@ -90,3 +90,4 @@
     </script>
 </body>
 </html>
+
